@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column flex-fill bd-highlight">
+
+    <div class="pt-5 bd-highlight">
+        <table class="table-bordered table table-striped">
+            <div class="mb-3 ">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% if messages %}
+                        <div class="mx-auto alerts ms-2 me-2">
+
+                            {% for message in messages %}
+                                {% if message.tags == "error" %}
+                      
+                                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% elif message.tags == "info" %}
+                                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+                    {% endif %}
+
+                    <div class="ps-3 d-flex flex-row bd-highlight">
+                        <div class="p-2 bd-highlight">
+                            <input type="text" name="search" placeholder="search..." id="search" class='col form-control'>
+                        </div>
+                        <div class="p-2 bd-highlight">
+                            <input type="submit" name="filter" id="filter" value="Search" class="form-control btn btn-outline-success">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>key</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sensor in sensors %}
+                <tr>
+                    <td><b>{{forloop.counter}}</b></th>
+                    <td>{{sensor.date_created}}</td>
+                    <td>{{sensor.sensor_name}}</td>
+                    <td>{{sensor.sensor_type}}</td>
+                    <td>{{sensor.key}}</td>
+                    <td>
+                        <a href="/sensor/delete/?key={{sensor.key}}"><button type="button" class="btn btn-sm btn-outline-danger">Delete</button></a>
+                        <a href="/sensor/edit/?key={{sensor.key}}"><button type="button" class="btn btn-sm btn-outline-warning">Edit</button></a>
+                        <a href="/sensor/view/?key={{sensor.key}}"><button type="button" class="btn btn-sm btn-outline-info">view</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+    </div>
+
+    <div class="ps-2">
+        <a href="/sensor/create/"><button class="btn btn-outline-success btn-lg pt-0 mt-0">New Sensor</button></a>
+    </div>
+{% endblock content %}

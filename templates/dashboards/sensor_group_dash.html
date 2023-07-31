@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex flex-column flex-fill bd-highlight">
+
+    <div class="pt-5 bd-highlight">
+        <table class="table-bordered table table-striped">
+            <div class="mb-3 ">
+                <form method="POST">
+                    {% csrf_token %}
+
+                    {% if messages %}
+                        <div class="mx-auto alerts ms-2 me-2">
+
+                            {% for message in messages %}
+                                {% if message.tags == "error" %}
+                      
+                                  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% elif message.tags == "info" %}
+                                    <div class="alert alert-primary alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+                    {% endif %}
+
+                    <div class="ps-3 d-flex flex-row bd-highlight">
+                        <div class="p-2 bd-highlight">
+                            <input type="text" name="search" placeholder="search..." id="search" class='col form-control'>
+                        </div>
+                        <div class="p-2 bd-highlight">
+                            <input type="submit" name="filter" id="filter" value="Search" class="form-control btn btn-outline-success">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Id</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                <tr>
+                    <td><b>{{forloop.counter}}</b></td>
+                    <td>{{group.date_created}}</td>
+                    <td>{{group.group_name}}</td>
+                    <td>{{group.group_type}}</td>
+                    <td>{{group.group_id}}</td>
+                    <td>
+                        <a href="/group/delete/?key={{group.group_id}}"><button type="button" class="btn btn-sm btn-outline-danger">Delete</button></a>
+                        <a href="/group/edit/?key={{group.group_id}}"><button type="button" class="btn btn-sm btn-outline-warning">Edit</button></a>
+                        <a href="/group/view/?key={{group.group_id}}"><button type="button" class="btn btn-sm btn-outline-info">view</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+    </div>
+
+    <div class="ps-2">
+        <a href="/group/create/"><button class="btn btn-outline-success btn-lg pt-0 mt-0">New Sensor Group</button></a>
+    </div>
+{% endblock content %}

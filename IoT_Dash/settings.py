@@ -55,7 +55,14 @@ ROOT_URLCONF = 'IoT_Dash.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [
+            'templates',
+            'templates/auth',
+            'templates/create',
+            'templates/dashboards', 
+            'templates/edit',
+            'templates/view' 
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
