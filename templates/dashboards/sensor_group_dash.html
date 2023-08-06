@@ -64,11 +64,32 @@
                     <td>{{group.group_type}}</td>
                     <td>{{group.group_id}}</td>
                     <td>
-                        <a href="/group/delete/?key={{group.group_id}}"><button type="button" class="btn btn-sm btn-outline-danger">Delete</button></a>
+                        <button type="button" class="btn btn-sm btn-outline-danger"  data-toggle="modal" data-target="#DeleteSensorGroup{{group.group_id}}">Delete</button>
                         <a href="/group/edit/?key={{group.group_id}}"><button type="button" class="btn btn-sm btn-outline-warning">Edit</button></a>
                         <a href="/group/view/?key={{group.group_id}}"><button type="button" class="btn btn-sm btn-outline-info">view</button></a>
                     </td>
                 </tr>
+
+                <!-- This is just a quick and easy fix js is annoying sue me -->
+                <div class="modal fade" id="DeleteSensorGroup{{group.group_id}}" tabindex="-1" role="dialog" aria-labelledby="DeleteSensorGroup{{group.group_id}}Title" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="DeleteSensorGroup{{group.group_id}}LongTitle">Confirm Deletion</h5>
+                            <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><b>X</b></span>
+                            </button>
+                            </div>
+                                <div class="modal-body">
+                                Are you sure you want to delete the sensor group "{{group.group_name}}" and all it's currosponding data?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a href="/group/delete/?key={{group.group_id}}"><button type="button" class="btn btn-danger">Delete</button></a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
             </tbody>
         </table>    

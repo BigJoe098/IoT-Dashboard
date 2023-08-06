@@ -64,11 +64,32 @@
                     <td>{{sensor.sensor_type}}</td>
                     <td>{{sensor.key}}</td>
                     <td>
-                        <a href="/sensor/delete/?key={{sensor.key}}"><button type="button" class="btn btn-sm btn-outline-danger">Delete</button></a>
+                        <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#DeleteSensor{{sensor.key}}">Delete</button>
                         <a href="/sensor/edit/?key={{sensor.key}}"><button type="button" class="btn btn-sm btn-outline-warning">Edit</button></a>
                         <a href="/sensor/view/?key={{sensor.key}}"><button type="button" class="btn btn-sm btn-outline-info">view</button></a>
                     </td>
                 </tr>
+
+                <!-- This is just a quick and easy fix js is annoying sue me -->
+                <div class="modal fade" id="DeleteSensor{{sensor.key}}" tabindex="-1" role="dialog" aria-labelledby="DeleteSensor{{sensor.key}}Title" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h5 class="modal-title" id="DeleteSensor{{sensor.key}}LongTitle">Confirm Deletion</h5>
+                            <button type="button" class="btn" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><b>X</b></span>
+                            </button>
+                            </div>
+                                <div class="modal-body">
+                                Are you sure you want to delete the sensor with key "{{sensor.key}}" and all it's currosponding data?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <a href="/sensor/edit/?key={{sensor.key}}"><button type="button" class="btn btn-danger">Delete</button></a>
+                                </div>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
             </tbody>
         </table>    
