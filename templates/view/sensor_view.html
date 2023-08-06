@@ -65,10 +65,19 @@
         </div>
     </form>
     <div class="d-flex flex-row mt-4 ms-3">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Download Data
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'dash:download_data' 'csv' form.key.value%}">CSV</a></li>
+                <li><a class="dropdown-item" href="{% url 'dash:download_data' 'txt' form.key.value%}">TXT</a></li>
+            </ul>
+        </div>
         <div>
             <a href="{% url 'dash:sensor_dashboard' %}"><button class="mx-2 btn btn-outline-primary">Back</button></a>
         </div>
-    </div>
+    </div>    
 </div>
 
 <script>
