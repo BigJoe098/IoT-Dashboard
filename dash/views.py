@@ -6,8 +6,9 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib import messages
 from .forms import *
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from datetime import datetime
+import csv
 
 
 """
@@ -333,3 +334,29 @@ def group_delete(request):
     instance.delete()
     messages.success(request, "Successfully deleted")
     return redirect('/group/dashboard/')
+
+@login_required(login_url="/")
+def download_data(request, file_format, sensor_key):
+    sensors = Sensors.objects.filter(key=sensor_key)
+    sensor_data = Sensor_Data.objects.filter(sensor__key=sensor_key)
+
+    if file_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="data-{sensor_key}.{file_format}"'
+        writer = csv.writer(response)
+        writer.writerow(['API Key', 'Sensor Name', 'Sensor Type', 'Sensor Description', 'Date Created', 'Sensor Group'])
+        for sensor in sensors:
+            writer.writerow([sensor.key, sensor.sensor_name, sensor.sensor_type, sensor.sensor_description, sensor.date_created, sensor.sensor_group])
+        writer.writerow([])
+        writer.writerow(['Sensor', 'Data', 'Date and Time'])
+        for data in sensor_data:
+            writer.writerow([data.sensor, data.data, data.date_time])
+    elif file_format == 'txt':
+        response = HttpResponse(content_type="text/plain")
+        response['Content-Disposition'] = f'attachment; filename="data-{sensor_key}.{file_format}"'
+        for sensor in sensors:
+            response.write(f'API Key: {sensor.key}\nSensor Name: {sensor.sensor_name}\nSensor Type: {sensor.sensor_type}\nSensor Description: {sensor.sensor_description}\nDate Created: {sensor.date_created}\nSensor Group: {sensor.sensor_group}\n\nSensor Data:\n')
+            for data in sensor_data:
+                response.write(f'Data: {data.data}\nDate and Time: {data.date_time}\n')
+            response.write('\n\n')
+    return response

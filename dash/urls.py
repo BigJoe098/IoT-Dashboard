@@ -24,4 +24,7 @@ urlpatterns = [
     #Login/Logout
     path('logout/', views.logout_user, name='logout_user'),
     path('', views.login_user, name='login'),
+
+    # Download data
+    path('download_data/<str:file_format>/<str:sensor_key>/', views.download_data, name='download_data'),
 ]
