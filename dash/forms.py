@@ -40,6 +40,21 @@ class SensorViewForm(CustomModelForm):
             'key' : forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True})
         }  
 
+class SensorEditForm(CustomModelForm):
+
+    class Meta:
+        model = Sensors 
+        fields = "__all__"
+        exclude = ["user"]
+        widgets = {
+            'sensor_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'sensor_type': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'sensor_description': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'sensor_group' : forms.TextInput(attrs={'class' : 'form-control form-control-lg'}),
+            'date_created' : forms.DateInput(attrs={'class' : 'form-select form-control-lg'}),
+            'key' : forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True})
+        }  
+
 class SensorsGroupForm(CustomModelForm):
     
     class Meta:
@@ -49,5 +64,33 @@ class SensorsGroupForm(CustomModelForm):
         widgets = {
             'group_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
             'group_type': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'group_discription': forms.TextInput(attrs={'class': 'form-control form-control-lg'})
+        }  
+
+class SensorsGroupViewForm(CustomModelForm):
+    
+    class Meta:
+        model = Sensor_Group 
+        fields = "__all__"
+        exclude = ["user"]
+        widgets = {
+            'group_name': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True}),
+            'group_type': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True}),
+            'group_id': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True}),
+            'date_created': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True}),
+            'group_discription': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True})
+        }  
+
+class SensorsGroupEditForm(CustomModelForm):
+    
+    class Meta:
+        model = Sensor_Group 
+        fields = "__all__"
+        exclude = ["user"]
+        widgets = {
+            'group_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'group_type': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'group_id': forms.TextInput(attrs={'class': 'form-control form-control-lg', 'readonly' : True}),
+            'date_created': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
             'group_discription': forms.TextInput(attrs={'class': 'form-control form-control-lg'})
         }  

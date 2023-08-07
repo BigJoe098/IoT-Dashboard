@@ -27,8 +27,6 @@
         </div>
     {% endif %}
 
-    <div id="tester" style="width:100%;height:250px;"></div>
-
     <form id="main_form" method="POST">
         {% csrf_token %}
         <span class="fs-2 p-2">Sensor Details</span>
@@ -37,29 +35,43 @@
         <div class="d-flex flex-column m-3 p-3">
             <div class="d-flex flex-row flex-fill">
                 <div class="m-3 flex-fill">
+                    <label class="form-label fs-5" for="{{form.key.id_for_label}}">API Key</label>
+                    {{form.key}}
+                </div>
+            </div>
+            <div class="d-flex flex-row flex-fill">
+                <div class="m-3 flex-fill">
                     <label class="form-label fs-5" for="{{form.sensor_name.id_for_label}}">Sensor Name</label>
                     {{form.sensor_name}}
+                    {% if form.sensor_name.errors %}
+                        <span class="text-danger block mt-1">{{form.sensor_name.errors}}</span>
+                    {% endif %}
                 </div>
             
                 <div class="m-3 flex-fill">
                     <label class="form-label fs-5" for="{{form.sensor_type.id_for_label}}">Sensor Type</label>
                     {{form.sensor_type}}
+                    {% if form.sensor_type.errors %}
+                        <span class="text-danger block mt-1">{{form.sensor_type.errors}}</span>
+                    {% endif %}
                 </div>
             </div>
             <div class="d-flex flex-row flex-fill">
                 <div class="m-3 flex-fill">
-                    <label class="form-label fs-5" for="{{form.key.id_for_label}}">API Key</label>
-                    {{form.key}}
-                </div>
-                <div class="m-3 flex-fill">
                     <label class="form-label fs-5" for="{{form.sensor_group.id_for_label}}">Sensor Group</label>
                     {{form.sensor_group}}
+                    {% if form.sensor_group.errors %}
+                        <span class="text-danger block mt-1">{{form.sensor_group.errors}}</span>
+                    {% endif %}
                 </div>
             </div>
             <div class="d-flex flex-row flex-fill">
                 <div class="m-3 flex-fill">
                     <label class="form-label fs-5" for="{{form.sensor_description.id_for_label}}">Sensor Description</label>
                     {{form.sensor_description}}
+                    {% if form.sensor_description.errors %}
+                        <span class="text-danger block mt-1">{{form.sensor_description.errors}}</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -68,32 +80,9 @@
         <div>
             <a href="{% url 'dash:sensor_dashboard' %}"><button class="mx-2 btn btn-outline-primary">Back</button></a>
         </div>
+        <div>
+            <input form="main_form" type="submit" class="btn btn-outline-success">
+        </div>
     </div>
 </div>
-
-<script>
-
-    //required variables
-    var latest_data = null;
-    var main_chart = document.getElementById('tester');
-    
-    function date_resolver(result){
-        console.log(result.dates)
-        latest_data = result.dates[result.dates.length-1];
-    }
-
-    //on load
-    $.get({url:'/sensor/data/get/?key={{form.key.value}}&initial=1',success: function(result){
-        Plotly.newPlot(main_chart, [{x:result.dates, y: result.datas}], {margin: { t: 0 }});
-        date_resolver(result);
-    }});
-
-    //on intervals
-    setInterval(function(){
-        $.ajax({url:`/sensor/data/get/?key={{form.key.value}}&initial=0&date=${latest_data}`,success: function(result){
-            Plotly.extendTraces(main_chart, {y:[result.datas], x:[result.dates]}, [0])
-        }});
-    }, 10000)
-
-</script>
 {% endblock content %}

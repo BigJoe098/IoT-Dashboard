@@ -6,6 +6,8 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib import messages
 from .forms import *
+from django.http import JsonResponse
+from datetime import datetime
 
 
 """
@@ -46,6 +48,7 @@ Sensor
 #####################################################################
 """
 
+#Dashboard for the sensor
 @login_required(login_url="/")
 def sensor_dashboard(request):
     
@@ -75,6 +78,7 @@ def sensor_dashboard(request):
     
     return render(request, 'sensor_dash.html', {'sensors': result_set, 'site_settings' : site_settings})
 
+#Sensor Creation
 @login_required(login_url="/")
 def sensor_create(request):
     
@@ -97,6 +101,34 @@ def sensor_create(request):
         }
         return render(request, "sensor_create.html",{"form":form, 'site_settings' : site_settings})
     
+#Sensor Editing
+@login_required(login_url="")
+def sensor_edit(request):
+    
+    key=request.GET['key']
+    instance = Sensors.objects.get(key=key)
+    
+    if request.method == 'POST':
+        form = SensorEditForm(request.POST, instance=instance)
+        
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+            messages.success(request, "Successfully Edited.")
+        else:
+            messages.error(request, "Was Not able to edit sensor.")
+        
+        return redirect("/sensor/dashboard/")
+    
+    else:
+        form = SensorEditForm(instance=instance)
+        site_settings = {
+            'active' : 'Sensors',
+            'dashboard_heading' : 'Edit Sensor Details'
+        }
+        return render(request, "sensor_edit.html",{"form":form, 'site_settings' : site_settings})
+
+#Viewing Sensor Data
 @login_required(login_url="")
 def sensor_view(request):
     
@@ -108,6 +140,90 @@ def sensor_view(request):
         'dashboard_heading' : 'View Sensor Details'
     }
     return render(request, "sensor_view.html",{"form":form, 'site_settings' : site_settings})
+
+#Deleteing Sensor Data
+@login_required(login_url="")
+def sensor_delete(request):
+    
+    key=request.GET['key']
+    instance = Sensors.objects.get(key=key)
+    instance.delete()
+    messages.success(request, "Successfully deleted")
+    return redirect('/sensor/dashboard/')
+
+#Function to accept sensor data 
+def sensor_data(request):
+    
+    try:
+        key=request.GET['key']
+        data=request.GET['data']
+        if data == None or data == '':
+            raise Exception('No Data Recieved')
+        instance = Sensors.objects.get(key=key)
+        new_sensor_record = Sensor_Data(sensor=instance, data=data)
+        new_sensor_record.save()
+        json_response = {
+            'status' : 'OK'
+        }
+    except:
+        json_response = {
+            'status' : 'NO'
+        }
+    return JsonResponse(json_response)
+
+#function to send data to sensor
+def sensor_get(request):
+    
+    try:
+        key=request.GET['key']
+        initial=request.GET['initial']
+        if initial == '1':
+
+            instance = list(
+                Sensor_Data.objects.filter(sensor=Sensors.objects.get(key=key))
+                .order_by('date_time')
+                .values_list('data','date_time')
+            )
+            datas = [int(data[0]) for data in instance]
+            dates = [date[1].strftime('%m/%d/%Y, %H:%M:%S.%f') for date in instance]
+
+            json_response = {
+                'datas' : datas,
+                'dates' : dates
+            }
+
+            return JsonResponse(json_response)
+        
+        elif initial == '0':
+            last_date = request.GET['date']
+            if last_date == None or last_date == '':
+                raise Exception('No Date Recieved')
+            
+            last_date = datetime.strptime(last_date, '%m/%d/%Y, %H:%M:%S.%f')
+
+            instance = list(
+                Sensor_Data.objects.filter(sensor=Sensors.objects.get(key=key), date_time__gt=last_date)
+                .order_by('date_time')
+                .values_list('data','date_time')
+            )
+            datas = [int(data[0]) for data in instance]
+            dates = [date[1].strftime('%m/%d/%Y, %H:%M:%S.%f') for date in instance]
+
+            json_response = {
+                'datas' : datas,
+                'dates' : dates
+            }
+
+            return JsonResponse(json_response)
+        
+        else:
+            raise Exception('Invalid initial Data')
+    except Exception as e:
+        print(e)
+        json_response = {
+            'status' : 'NO'
+        }
+    return JsonResponse(json_response)
 
 """
 #####################################################################
@@ -168,3 +284,52 @@ def group_create(request):
         }
         return render(request, "group_create.html",{"form" : form, 'site_settings' : site_settings})
 
+#Sensor Editing
+@login_required(login_url="")
+def group_edit(request):
+    
+    key=request.GET['key']
+    instance = Sensor_Group.objects.get(group_id=key)
+    
+    if request.method == 'POST':
+        form = SensorsGroupEditForm(request.POST, instance=instance)
+        
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+            messages.success(request, "Successfully Edited.")
+        else:
+            messages.error(request, "Was Not able to edit sensor.")
+        
+        return redirect("/group/dashboard/")
+    
+    else:
+        form = SensorsGroupEditForm(instance=instance)
+        site_settings = {
+            'active' : 'Sensor_Groups',
+            'dashboard_heading' : 'Edit Sensor Group Details'
+        }
+        return render(request, "group_edit.html",{"form":form, 'site_settings' : site_settings})
+
+#Viewing Sensor Data
+@login_required(login_url="")
+def group_view(request):
+    
+    key=request.GET['key']
+    instance = Sensor_Group.objects.get(group_id=key)
+    form = SensorsGroupViewForm(instance=instance)
+    site_settings = {
+        'active' : 'Sensor_Groups',
+        'dashboard_heading' : 'View Sensor Group Details'
+    }
+    return render(request, "group_view.html",{"form":form, 'site_settings' : site_settings})
+
+#Deleteing Sensor Data
+@login_required(login_url="")
+def group_delete(request):
+    
+    key=request.GET['key']
+    instance = Sensor_Group.objects.get(group_id=key)
+    instance.delete()
+    messages.success(request, "Successfully deleted")
+    return redirect('/group/dashboard/')
