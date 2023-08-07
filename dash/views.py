@@ -185,13 +185,14 @@ def sensor_get(request):
                 .order_by('date_time')
                 .values_list('data','date_time')
             )
-            datas = [int(data[0]) for data in instance]
+            datas = [float(data[0]) for data in instance]
             dates = [date[1].strftime('%m/%d/%Y, %H:%M:%S.%f') for date in instance]
 
             json_response = {
                 'datas' : datas,
                 'dates' : dates
             }
+            print(json_response)
 
             return JsonResponse(json_response)
         
@@ -207,7 +208,7 @@ def sensor_get(request):
                 .order_by('date_time')
                 .values_list('data','date_time')
             )
-            datas = [int(data[0]) for data in instance]
+            datas = [float(data[0]) for data in instance]
             dates = [date[1].strftime('%m/%d/%Y, %H:%M:%S.%f') for date in instance]
 
             json_response = {

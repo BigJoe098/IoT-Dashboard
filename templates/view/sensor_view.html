@@ -88,7 +88,11 @@
     
     function date_resolver(result){
         console.log(result.dates)
-        latest_data = result.dates[result.dates.length-1];
+        if (result.dates !=null){
+            if(result.dates.length-1 > 0){
+                latest_data = result.dates[result.dates.length-1];
+            }
+        }
     }
 
     //on load
@@ -99,9 +103,16 @@
 
     //on intervals
     setInterval(function(){
-        $.ajax({url:`/sensor/data/get/?key={{form.key.value}}&initial=0&date=${latest_data}`,success: function(result){
-            Plotly.extendTraces(main_chart, {y:[result.datas], x:[result.dates]}, [0])
-        }});
+        if (latest_data != null){
+            $.ajax({url:`/sensor/data/get/?key={{form.key.value}}&initial=0&date=${latest_data}`,success: function(result){
+                Plotly.extendTraces(main_chart, {y:[result.datas], x:[result.dates]}, [0])
+            }});
+        } else {
+            $.get({url:'/sensor/data/get/?key={{form.key.value}}&initial=1',success: function(result){
+                Plotly.newPlot(main_chart, [{x:result.dates, y: result.datas}], {margin: { t: 0 }});
+                date_resolver(result);
+            }});
+        }
     }, 10000)
 
 </script>
