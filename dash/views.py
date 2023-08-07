@@ -323,7 +323,7 @@ def group_view(request):
         'active' : 'Sensor_Groups',
         'dashboard_heading' : 'View Sensor Group Details'
     }
-    return render(request, "group_view.html",{"form":form, 'site_settings' : site_settings})
+    return render(request, "group_view.html",{"form":form, 'site_settings' : site_settings, 'group_id': instance.group_id,})
 
 #Deleteing Sensor Data
 @login_required(login_url="")
@@ -348,15 +348,45 @@ def download_data(request, file_format, sensor_key):
         for sensor in sensors:
             writer.writerow([sensor.key, sensor.sensor_name, sensor.sensor_type, sensor.sensor_description, sensor.date_created, sensor.sensor_group])
         writer.writerow([])
-        writer.writerow(['Sensor', 'Data', 'Date and Time'])
+        writer.writerow(['Data', 'Date and Time'])
         for data in sensor_data:
-            writer.writerow([data.sensor, data.data, data.date_time])
+            writer.writerow([data.data, data.date_time])
     elif file_format == 'txt':
         response = HttpResponse(content_type="text/plain")
         response['Content-Disposition'] = f'attachment; filename="data-{sensor_key}.{file_format}"'
         for sensor in sensors:
             response.write(f'API Key: {sensor.key}\nSensor Name: {sensor.sensor_name}\nSensor Type: {sensor.sensor_type}\nSensor Description: {sensor.sensor_description}\nDate Created: {sensor.date_created}\nSensor Group: {sensor.sensor_group}\n\nSensor Data:\n')
             for data in sensor_data:
-                response.write(f'Data: {data.data}\nDate and Time: {data.date_time}\n')
+                response.write(f'Data: {data.data}, Date and Time: {data.date_time}\n')
+            response.write('\n\n')
+    return response
+
+@login_required(login_url="/")
+def download_group_data(request, file_format, group_id):
+    sensor_group = Sensor_Group.objects.get(group_id=group_id)
+    sensors = Sensors.objects.filter(sensor_group=sensor_group)
+
+    if file_format == 'csv':
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = f'attachment; filename="group-data-{group_id}-{sensor_group.group_name}.{file_format}"'
+        writer = csv.writer(response)
+        writer.writerow(['Group Id', 'Group Name', 'Group Type', 'Group Description', 'Date Created'])
+        writer.writerow([sensor_group.group_id, sensor_group.group_name, sensor_group.group_type, sensor_group.group_discription, sensor_group.date_created])
+        writer.writerow([])
+        writer.writerow(['API Key', 'Sensor Name', 'Sensor Type', 'Sensor Description', 'Date Created'])
+        for sensor in sensors:
+            writer.writerow([sensor.key, sensor.sensor_name, sensor.sensor_type, sensor.sensor_description, sensor.date_created])
+            writer.writerow(['Data', 'Date and Time'])
+            for data in Sensor_Data.objects.filter(sensor=sensor):
+                writer.writerow([data.data, data.date_time])
+            writer.writerow([])
+    elif file_format == 'txt':
+        response = HttpResponse(content_type="text/plain")
+        response['Content-Disposition'] = f'attachment; filename="group-data-{group_id}-{sensor_group.group_name}.{file_format}"'
+        response.write(f'Group Id: {sensor_group.group_id}\nGroup Name: {sensor_group.group_name}\nGroup Type: {sensor_group.group_type}\nGroup Description: {sensor_group.group_discription}\nDate Created: {sensor_group.date_created}\n\nSensors:\n')
+        for sensor in sensors:
+            response.write(f'API Key: {sensor.key}\nSensor Name: {sensor.sensor_name}\nSensor Type: {sensor.sensor_type}\nSensor Description: {sensor.sensor_description}\nDate Created: {sensor.date_created}\n\nSensor Data:\n')
+            for data in Sensor_Data.objects.filter(sensor=sensor):
+                response.write(f'Data: {data.data}, Date and Time: {data.date_time}\n')
             response.write('\n\n')
     return response

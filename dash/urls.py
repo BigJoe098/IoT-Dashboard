@@ -27,4 +27,5 @@ urlpatterns = [
 
     # Download data
     path('download_data/<str:file_format>/<str:sensor_key>/', views.download_data, name='download_data'),
+    path('download_group_data/<str:file_format>/<str:group_id>/', views.download_group_data, name='download_group_data'),
 ]

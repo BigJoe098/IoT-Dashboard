@@ -52,6 +52,15 @@
         </div>
     </form>
     <div class="d-flex flex-row mt-4 ms-3">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                Download Data
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'dash:download_group_data' 'csv' group_id%}">CSV</a></li>
+                <li><a class="dropdown-item" href="{% url 'dash:download_group_data' 'txt' group_id%}">TXT</a></li>
+            </ul>
+        </div>
         <div>
             <a href="{% url 'dash:group_dashboard' %}"><button class="mx-2 btn btn-outline-primary">Back</button></a>
         </div>
